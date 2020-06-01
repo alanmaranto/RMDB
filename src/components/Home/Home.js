@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { searchEndpoint, moviePageEndpoint } from "../../api";
+import { searchEndpoint, searchTermEndpoint, moviePageEndpoint } from "../../api";
 import { API_URL, API_KEY, IMAGE_BASE_URL, BACKDROP_SIZE } from "../../config";
 import HeroImage from "../elements/HeroImage/HeroImage";
 import SearchBar from "../elements/SearchBar/SearchBar";
@@ -26,28 +26,44 @@ class Home extends Component {
 
   componentDidMount() {
     this.setState({ loading: true });
-    this.fetchItems();
+    const endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=es-ES&page=1`;
+    this.fetchItems(endpoint);
+  }
+
+  searchItems = searchTerm => {
+    console.log(searchTerm)
+    let endpoint = '';
+    this.setState({
+      movies: [],
+      loading: true,
+      searchTerm,
+    })
+    if (searchTerm === '') {
+      endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=es-ES&page=1`;
+    } else {
+      endpoint = `${API_URL}search/movie?api_key=${API_KEY}&language=es-ES&query=${searchTerm}`
+    }
+    this.fetchItems(endpoint)
   }
 
   loadMoreItems = () => {
     const { searchTerm, currentPage } = this.state;
-
+    let endpoint= '';
     this.setState({ loading: true });
 
     if (searchTerm === "") {
-      moviePageEndpoint(API_URL, API_KEY, currentPage + 1);
+      endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=es-ES&page=${currentPage + 1}`;
     } else {
-      searchEndpoint(API_URL, API_KEY, searchTerm, currentPage + 1);
+      endpoint = `${API_URL}search/movie?api_key=${API_KEY}&language=es-ES&query=${searchTerm}&page=${currentPage + 1}`;
     }
-    this.fetchItems();
+    this.fetchItems(endpoint);
   };
 
-  fetchItems = () => {
+  fetchItems = (endpoint) => {
     const { movies, heroImage } = this.state;
-    fetch(moviePageEndpoint(API_URL, API_KEY, 1))
+    fetch(endpoint)
       .then((response) => response.json())
       .then((response) => {
-        console.log(response);
         this.setState({
           movies: [...movies, ...response.results],
           heroImage: heroImage || response.results[0],
@@ -69,7 +85,9 @@ class Home extends Component {
               title={heroImage.original_title}
               text={heroImage.overview}
             />
-            <SearchBar />
+            <SearchBar 
+              searchItems={this.searchItems}
+            />
           </div>
         ) : null}
         <FourColGrid />
