@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { searchEndpoint, moviePageEndpoint } from "../../api";
-import { API_URL, API_KEY } from "../../config";
+import { API_URL, API_KEY, IMAGE_BASE_URL, BACKDROP_SIZE } from "../../config";
 import HeroImage from "../elements/HeroImage/HeroImage";
 import SearchBar from "../elements/SearchBar/SearchBar";
 import FourColGrid from "../elements/FourColGrid/FourColGrid";
@@ -32,7 +32,6 @@ class Home extends Component {
   loadMoreItems = () => {
     const { searchTerm, currentPage } = this.state;
 
-    let endpoint = "";
     this.setState({ loading: true });
 
     if (searchTerm === "") {
@@ -60,10 +59,19 @@ class Home extends Component {
   };
 
   render() {
+    const { heroImage } = this.state;
     return (
       <div className="rmdb-home">
-        <HeroImage />
-        <SearchBar />
+        {heroImage ? (
+          <div>
+            <HeroImage
+              image={`${IMAGE_BASE_URL}${BACKDROP_SIZE}/${heroImage.backdrop_path}`}
+              title={heroImage.original_title}
+              text={heroImage.overview}
+            />
+            <SearchBar />
+          </div>
+        ) : null}
         <FourColGrid />
         <Spinner />
         <LoadMoreBtn />
