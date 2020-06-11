@@ -1,6 +1,16 @@
 import React, { Component } from "react";
-import { searchEndpoint, searchTermEndpoint, moviePageEndpoint } from "../../api";
-import { API_URL, API_KEY, IMAGE_BASE_URL, BACKDROP_SIZE } from "../../config";
+import {
+  searchEndpoint,
+  searchTermEndpoint,
+  moviePageEndpoint,
+} from "../../api";
+import {
+  API_URL,
+  API_KEY,
+  IMAGE_BASE_URL,
+  BACKDROP_SIZE,
+  POSTER_SIZE,
+} from "../../config";
 import HeroImage from "../elements/HeroImage/HeroImage";
 import SearchBar from "../elements/SearchBar/SearchBar";
 import FourColGrid from "../elements/FourColGrid/FourColGrid";
@@ -30,31 +40,35 @@ class Home extends Component {
     this.fetchItems(endpoint);
   }
 
-  searchItems = searchTerm => {
-    console.log(searchTerm)
-    let endpoint = '';
+  searchItems = (searchTerm) => {
+    console.log(searchTerm);
+    let endpoint = "";
     this.setState({
       movies: [],
       loading: true,
       searchTerm,
-    })
-    if (searchTerm === '') {
+    });
+    if (searchTerm === "") {
       endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=es-ES&page=1`;
     } else {
-      endpoint = `${API_URL}search/movie?api_key=${API_KEY}&language=es-ES&query=${searchTerm}`
+      endpoint = `${API_URL}search/movie?api_key=${API_KEY}&language=es-ES&query=${searchTerm}`;
     }
-    this.fetchItems(endpoint)
-  }
+    this.fetchItems(endpoint);
+  };
 
   loadMoreItems = () => {
     const { searchTerm, currentPage } = this.state;
-    let endpoint= '';
+    let endpoint = "";
     this.setState({ loading: true });
 
     if (searchTerm === "") {
-      endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=es-ES&page=${currentPage + 1}`;
+      endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=es-ES&page=${
+        currentPage + 1
+      }`;
     } else {
-      endpoint = `${API_URL}search/movie?api_key=${API_KEY}&language=es-ES&query=${searchTerm}&page=${currentPage + 1}`;
+      endpoint = `${API_URL}search/movie?api_key=${API_KEY}&language=es-ES&query=${searchTerm}&page=${
+        currentPage + 1
+      }`;
     }
     this.fetchItems(endpoint);
   };
@@ -75,7 +89,7 @@ class Home extends Component {
   };
 
   render() {
-    const { heroImage } = this.state;
+    const { heroImage, searchTerm, loading, movies } = this.state;
     return (
       <div className="rmdb-home">
         {heroImage ? (
@@ -85,12 +99,31 @@ class Home extends Component {
               title={heroImage.original_title}
               text={heroImage.overview}
             />
-            <SearchBar 
-              searchItems={this.searchItems}
-            />
+            <SearchBar searchItems={this.searchItems} />
           </div>
         ) : null}
-        <FourColGrid />
+        <div className="rmdb-home-grid">
+          <FourColGrid
+            header={searchTerm ? "Search Result" : "Popular Movies"}
+            loading={loading}
+          >
+            {movies.map((movie, index) => {
+              return (
+                <MovieThumb
+                  key={index}
+                  clickable={true}
+                  image={
+                    movie.poster_path
+                      ? `${IMAGE_BASE_URL}${POSTER_SIZE}${movie.poster_path}`
+                      : "./images/no_image.jpg"
+                  }
+                  movieId={movie.id}
+                  movieName={movie.original_title}
+                />
+              );
+            })}
+          </FourColGrid>
+        </div>
         <Spinner />
         <LoadMoreBtn />
       </div>
