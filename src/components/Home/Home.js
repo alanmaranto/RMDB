@@ -1,10 +1,5 @@
 import React, { Component } from "react";
 import {
-  searchEndpoint,
-  searchTermEndpoint,
-  moviePageEndpoint,
-} from "../../api";
-import {
   API_URL,
   API_KEY,
   IMAGE_BASE_URL,
@@ -89,7 +84,14 @@ class Home extends Component {
   };
 
   render() {
-    const { heroImage, searchTerm, loading, movies } = this.state;
+    const {
+      heroImage,
+      searchTerm,
+      loading,
+      movies,
+      currentPage,
+      totalPages,
+    } = this.state;
     return (
       <div className="rmdb-home">
         {heroImage ? (
@@ -123,9 +125,11 @@ class Home extends Component {
               );
             })}
           </FourColGrid>
+          {loading ? <Spinner /> : null}
+          {currentPage && totalPages && !loading ? (
+            <LoadMoreBtn text="Load More" onClick={this.loadMoreItems} />
+          ) : null}
         </div>
-        <Spinner />
-        <LoadMoreBtn />
       </div>
     );
   }
