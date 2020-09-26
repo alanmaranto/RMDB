@@ -10,7 +10,7 @@ import "./Movie.css";
 
 class Movie extends Component {
   state = {
-    movie: '',
+    movie: "",
     actors: [],
     directors: [],
     loading: false,
@@ -27,7 +27,6 @@ class Movie extends Component {
     fetch(endpoint)
       .then((result) => result.json())
       .then((result) => {
-          console.log(result)
         if (result.status_code) {
           this.setState({ loading: false });
         } else {

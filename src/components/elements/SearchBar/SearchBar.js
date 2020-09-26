@@ -10,13 +10,13 @@ class SearchBar extends Component {
   timeout = null;
 
   onSearch = (e) => {
-    const { searchValue } = this.state;
     const { searchItems } = this.props;
+
     this.setState({ searchValue: e.target.value });
     clearTimeout(this.timeout);
 
     this.timeout = setTimeout(() => {
-      searchItems(searchValue);
+      searchItems(this.state.searchValue);
     }, 500);
   };
 
