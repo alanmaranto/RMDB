@@ -2,30 +2,27 @@ import React, { Component } from "react";
 import FontAwesome from "react-fontawesome";
 import "./SearchBar.css";
 
-const initialState = {
-  searchValue: "",
-};
-
 class SearchBar extends Component {
-  constructor(props) {
-    super(props);
-    this.state = initialState;
-  }
+  state = {
+    searchValue: "",
+  };
 
-  timeout= null;
+  timeout = null;
 
   onSearch = (e) => {
-    const { searchValue }= this.state;
+    const { searchValue } = this.state;
     const { searchItems } = this.props;
     this.setState({ searchValue: e.target.value });
-    clearImmediate(this.timeout);
+    clearTimeout(this.timeout);
 
     this.timeout = setTimeout(() => {
-      searchItems(searchValue)
+      searchItems(searchValue);
     }, 500);
   };
+
   render() {
     const { searchValue } = this.state;
+
     return (
       <div className="rmdb-searchbar">
         <div className="rmdb-searchbar-content">
