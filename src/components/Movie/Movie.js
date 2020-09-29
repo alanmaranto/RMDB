@@ -24,7 +24,7 @@ class Movie extends Component {
     } else {
       this.setState({ loading: true });
       // Fetch the movie
-      const endpoint = `${API_URL}movie/${this.props.match.params.movieId}?api_key=${API_KEY}&language=es-ES`;
+      const endpoint = `${API_URL}movie/${movieId}?api_key=${API_KEY}&language=es-ES`;
       this.fetchItems(endpoint);
     }
   }
