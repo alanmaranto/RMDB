@@ -4,7 +4,7 @@ import {
   BACKDROP_SIZE,
   POSTER_SIZE,
 } from "../../config";
-import { decideMoviesToShow, getMovies } from '../../api.js'
+import { decideMoviesToShow } from '../../api.js'
 import HeroImage from "../elements/HeroImage/HeroImage";
 import SearchBar from "../elements/SearchBar/SearchBar";
 import FourColGrid from "../elements/FourColGrid/FourColGrid";
