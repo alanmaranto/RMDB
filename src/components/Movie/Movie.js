@@ -29,41 +29,31 @@ class Movie extends Component {
     }
   }
 
-  fetchItems = (endpoint) => {
-    const { movieId } = this.props.match.params;
-    fetch(endpoint)
-      .then((result) => result.json())
-      .then((result) => {
-        if (result.status_code) {
-          this.setState({ loading: false });
-        } else {
-          this.setState({ movie: result }, () => {
-            const endpoint = `${API_URL}movie/${movieId}/credits?api_key=${API_KEY}`;
-            fetch(endpoint)
-              .then((result) => result.json())
-              .then((result) => {
-                const directors = result.crew.filter(
-                  (member) => member.job === "Director"
-                );
-
-                this.setState(
-                  {
-                    actors: result.cast,
-                    directors,
-                    loading: false,
-                  },
-                  () => {
-                    localStorage.setItem(
-                      `${movieId}`,
-                      JSON.stringify(this.state)
-                    );
-                  }
-                );
-              });
-          });
-        }
-      })
-      .catch((error) => console.error("Error", error));
+  fetchItems = async (endpoint) => {
+    try {
+      const { movieId } = this.props.match.params;
+      const result = await (await fetch(endpoint)).json();
+      if (result.status_code) {
+        this.setState({ loading: false });
+      } else {
+        this.setState({ movie: result });
+        const creditsEndpoint = `${API_URL}movie/${movieId}/credits?api_key=${API_KEY}`;
+        const creditsResult = await (await fetch(creditsEndpoint)).json();
+        const directors = await creditsResult.crew.filter(
+          (member) => member.job === "Director"
+        );
+        this.setState(
+          {
+            actors: creditsResult.cast,
+            directors,
+            loading: false,
+          },
+          () => {
+            localStorage.setItem(`${movieId}`, JSON.stringify(this.state));
+          }
+        );
+      }
+    } catch (error) {}
   };
 
   render() {
@@ -92,7 +82,7 @@ class Movie extends Component {
             </FourColGrid>
           </div>
         ) : null}
-        {actors && !loading ? <h1>No Movie Found!</h1> : null}
+        {!actors && !loading ? <h1>No Movie Found!</h1> : null}
         {loading ? <Spinner /> : null}
       </div>
     );

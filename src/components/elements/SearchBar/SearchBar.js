@@ -16,7 +16,7 @@ class SearchBar extends Component {
     clearTimeout(this.timeout);
 
     this.timeout = setTimeout(() => {
-      searchItems(this.state.searchValue);
+      searchItems(false, this.state.searchValue);
     }, 500);
   };
 
