@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import {
-  API_URL,
-  API_KEY,
   IMAGE_BASE_URL,
   BACKDROP_SIZE,
   POSTER_SIZE,
 } from "../../config";
+import { decideMoviesToShow, getMovies } from '../../api.js'
 import HeroImage from "../elements/HeroImage/HeroImage";
 import SearchBar from "../elements/SearchBar/SearchBar";
 import FourColGrid from "../elements/FourColGrid/FourColGrid";
@@ -35,17 +34,9 @@ class Home extends Component {
       this.setState({ ...localState });
     } else {
       this.setState({ loading: true });
-      this.fetchItems(this.createEndpoint("movie/popular", false, ""));
+      this.fetchItems(decideMoviesToShow("movie/popular", false, "", this.state.currentPage));
     }
   }
-
-  createEndpoint = (type, loadMore, searchTerm) => {
-    const { currentPage } = this.state;
-
-    return `${API_URL}${type}?api_key=${API_KEY}&language=en-US&page=${
-      loadMore && currentPage + 1
-    }&query=${searchTerm}`;
-  };
 
   updateItems = (loadMore, term) => {
     const { movies } = this.state;
@@ -59,11 +50,12 @@ class Home extends Component {
       () => {
         this.fetchItems(
           !this.state.searchTerm
-            ? this.createEndpoint("movie/popular", loadMore, "")
-            : this.createEndpoint(
+            ? decideMoviesToShow("movie/popular", loadMore, "", this.state.currentPage)
+            : decideMoviesToShow(
                 "search/movie",
                 loadMore,
-                this.state.searchTerm
+                this.state.searchTerm,
+                this.state.currentPage
               )
         );
       }

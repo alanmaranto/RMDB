@@ -1,13 +1,8 @@
-const moviePageEndpoint = (apiUrl, apiKey, pageValue) => {
-  return `${apiUrl}movie/popular?api_key=${apiKey}&language=es-ES&page=${pageValue}`;
-};
+import { API_URL, API_KEY } from './config'
 
-const searchEndpoint = (apiUrl, apiKey, searchTerm, pageValue) => {
-  return `${apiUrl}search/movie?api_key=${apiKey}&language=es-ES&query${searchTerm}&page=${pageValue}`;
-};
+export const decideMoviesToShow = (type, loadMore, searchTerm, currentPage) => {
 
-const searchTermEndpoint = (apiUrl, apiKey, searchTerm) => {
-  return `${apiUrl}search/movie?api_key=${apiKey}&language=es-ES&query${searchTerm}`;
+  return `${API_URL}${type}?api_key=${API_KEY}&language=en-US&page=${
+    loadMore && currentPage + 1
+  }&query=${searchTerm}`;
 };
-
-export { moviePageEndpoint, searchEndpoint, searchTermEndpoint };
