@@ -17,13 +17,20 @@ class Movie extends Component {
   };
 
   componentDidMount() {
-    this.setState({ loading: true });
-    // Fetch the movie
-    const endpoint = `${API_URL}movie/${this.props.match.params.movieId}?api_key=${API_KEY}&language=es-ES`;
-    this.fetchItems(endpoint);
+    const { movieId } = this.props.match.params;
+    if (localStorage.getItem(`${movieId}`)) {
+      const localState = JSON.parse(localStorage.getItem(`${movieId}`));
+      this.setState({ ...localState });
+    } else {
+      this.setState({ loading: true });
+      // Fetch the movie
+      const endpoint = `${API_URL}movie/${this.props.match.params.movieId}?api_key=${API_KEY}&language=es-ES`;
+      this.fetchItems(endpoint);
+    }
   }
 
   fetchItems = (endpoint) => {
+    const { movieId } = this.props.match.params;
     fetch(endpoint)
       .then((result) => result.json())
       .then((result) => {
@@ -31,7 +38,7 @@ class Movie extends Component {
           this.setState({ loading: false });
         } else {
           this.setState({ movie: result }, () => {
-            const endpoint = `${API_URL}movie/${this.props.match.params.movieId}/credits?api_key=${API_KEY}`;
+            const endpoint = `${API_URL}movie/${movieId}/credits?api_key=${API_KEY}`;
             fetch(endpoint)
               .then((result) => result.json())
               .then((result) => {
@@ -39,11 +46,19 @@ class Movie extends Component {
                   (member) => member.job === "Director"
                 );
 
-                this.setState({
-                  actors: result.cast,
-                  directors,
-                  loading: false,
-                });
+                this.setState(
+                  {
+                    actors: result.cast,
+                    directors,
+                    loading: false,
+                  },
+                  () => {
+                    localStorage.setItem(
+                      `${movieId}`,
+                      JSON.stringify(this.state)
+                    );
+                  }
+                );
               });
           });
         }
